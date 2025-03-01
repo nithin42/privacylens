@@ -1,0 +1,39 @@
+name: Bug Report
+description: Report a bug or unexpected behaviour in privacylens
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for taking the time to report a bug!"
+  - type: input
+    id: version
+    attributes:
+      label: privacylens version
+      placeholder: "e.g. 0.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      placeholder: What happened? What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Import privacylens
+        2. Call audit(model, ...)
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        - OS: Ubuntu 22.04
+        - Python: 3.11
+        - privacyaudit: 0.1.0
