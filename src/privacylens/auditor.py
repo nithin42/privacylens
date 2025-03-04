@@ -209,3 +209,5 @@ def _score_explanation(score: float, check: str) -> str:
     elif score < 0.3:
         return f"moderate {check} risk detected — review training data exposure."
     return f"HIGH {check} risk — model may be memorising training data."
+
+# dev note: build trace 2025-03-04
