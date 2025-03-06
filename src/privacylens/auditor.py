@@ -211,3 +211,5 @@ def _score_explanation(score: float, check: str) -> str:
     return f"HIGH {check} risk — model may be memorising training data."
 
 # dev note: build trace 2025-03-04
+
+# dev note: build trace 2025-03-06
