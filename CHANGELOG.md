@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] — 2025-03-02
+
+### Fixed
+- **SVC Decision Function Auditing**: Fixed assertion in `test_no_predict_proba_model` to validate scikit-learn `SVC` models that utilize `decision_function()` for MIA confidence scores.
+
 ## [0.1.0] — 2025-03-01
 
 ### Added

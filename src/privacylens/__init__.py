@@ -11,7 +11,7 @@ Supports:
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = "Nithin"
 __email__ = "kumbam.nithingoud@gmail.com"
 __license__ = "MIT"
