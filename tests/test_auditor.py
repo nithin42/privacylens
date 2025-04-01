@@ -55,6 +55,16 @@ class TestAuditFunction:
         report = audit(model, X_train, y_train, X_test, run_mia=False)
         assert report.mia_score == 0.0
 
+    def test_pii_score_in_range(self, simple_model):
+        model, X_train, y_train, X_test, y_test = simple_model
+        report = audit(model, X_train, y_train, X_test)
+        assert 0.0 <= report.pii_score <= 1.0
+
+    def test_no_pii_leakage_skipped(self, simple_model):
+        model, X_train, y_train, X_test, y_test = simple_model
+        report = audit(model, X_train, y_train, X_test, run_pii_leakage=False)
+        assert report.pii_score == 0.0
+
     def test_model_type_recorded(self, simple_model):
         model, X_train, y_train, X_test, y_test = simple_model
         report = audit(model, X_train, y_train, X_test)

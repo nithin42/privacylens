@@ -11,11 +11,12 @@ Supports:
 
 from __future__ import annotations
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __author__ = "Nithin"
 __email__ = "kumbam.nithingoud@gmail.com"
 __license__ = "MIT"
 
 from privacylens.auditor import audit, AuditReport
+from privacylens.leakage.pii import PIILeakageAuditor
 
-__all__ = ["audit", "AuditReport", "__version__"]
+__all__ = ["audit", "AuditReport", "PIILeakageAuditor", "__version__"]

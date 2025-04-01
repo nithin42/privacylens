@@ -16,6 +16,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from privacylens.attacks.membership import MembershipInferenceAuditor
+from privacylens.leakage.pii import PIILeakageAuditor
 
 
 @dataclass
@@ -27,6 +28,8 @@ class AuditReport:
         model_type: String label of the model class (e.g. 'RandomForestClassifier').
         mia_score: Membership inference advantage score (0.0 = safe, 1.0 = fully vulnerable).
         mia_details: Detailed MIA results dictionary.
+        pii_score: PII leakage score (0.0 = clean, 1.0 = severe leakage).
+        pii_details: Detailed PII leakage results dictionary.
         risk_level: Aggregate risk classification: 'LOW', 'MEDIUM', or 'HIGH'.
         findings: List of plain-language finding strings.
     """
@@ -34,6 +37,8 @@ class AuditReport:
     model_type: str
     mia_score: float = 0.0
     mia_details: Dict[str, Any] = field(default_factory=dict)
+    pii_score: float = 0.0
+    pii_details: Dict[str, Any] = field(default_factory=dict)
     risk_level: str = "LOW"
     findings: List[str] = field(default_factory=list)
 
@@ -56,6 +61,14 @@ class AuditReport:
             f"[{mia_color}]{mia_risk}[/{mia_color}]",
         )
 
+        pii_risk = _score_to_risk(self.pii_score)
+        pii_color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(pii_risk, "white")
+        table.add_row(
+            "PII Leakage Detection",
+            f"{self.pii_score:.3f}",
+            f"[{pii_color}]{pii_risk}[/{pii_color}]",
+        )
+
         console.print(table)
         console.print(
             Panel(
@@ -73,6 +86,8 @@ class AuditReport:
             "model_type": self.model_type,
             "mia_score": self.mia_score,
             "mia_details": self.mia_details,
+            "pii_score": self.pii_score,
+            "pii_details": self.pii_details,
             "risk_level": self.risk_level,
             "findings": self.findings,
         }
@@ -85,6 +100,7 @@ def audit(
     X_test: "np.ndarray",
     y_test: Optional["np.ndarray"] = None,
     run_mia: bool = True,
+    run_pii_leakage: bool = True,
 ) -> AuditReport:
     """
     Run a full privacy audit on a trained ML model.
@@ -96,6 +112,7 @@ def audit(
         X_test: Held-out test feature matrix (not seen during training).
         y_test: Optional held-out test labels.
         run_mia: Whether to run Membership Inference Attack check. Default True.
+        run_pii_leakage: Whether to run PII leakage check on samples. Default True.
 
     Returns:
         AuditReport containing all privacy audit findings and risk scores.
@@ -107,9 +124,9 @@ def audit(
     """
     model_type = type(model).__name__
     findings: List[str] = []
+
     mia_score = 0.0
     mia_details: Dict[str, Any] = {}
-
     if run_mia:
         auditor = MembershipInferenceAuditor()
         mia_score, mia_details = auditor.run(model, X_train, y_train, X_test, y_test)
@@ -118,12 +135,24 @@ def audit(
             + _score_explanation(mia_score, "Membership Inference")
         )
 
-    risk_level = _aggregate_risk([mia_score])
+    pii_score = 0.0
+    pii_details: Dict[str, Any] = {}
+    if run_pii_leakage:
+        pii_auditor = PIILeakageAuditor()
+        pii_score, pii_details = pii_auditor.run(model, X_train, y_train)
+        findings.append(
+            f"PII leakage score: {pii_score:.3f} — "
+            + _score_explanation(pii_score, "PII Leakage")
+        )
+
+    risk_level = _aggregate_risk([mia_score, pii_score])
 
     return AuditReport(
         model_type=model_type,
         mia_score=mia_score,
         mia_details=mia_details,
+        pii_score=pii_score,
+        pii_details=pii_details,
         risk_level=risk_level,
         findings=findings,
     )
