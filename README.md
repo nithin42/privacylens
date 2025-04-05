@@ -5,8 +5,8 @@
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-89%25-brightgreen)](https://github.com/nithin42/privacylens)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg)](https://pypi.org/project/privacyaudit/)
+[![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)](https://github.com/nithin42/privacylens)
+[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.2.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -34,29 +34,31 @@ report.summary()
 │ Check                        │ Score      │ Risk            │
 ├──────────────────────────────┼────────────┼─────────────────┤
 │ Membership Inference Attack  │ 0.087      │ LOW             │
+│ PII Leakage Detection        │ 0.000      │ LOW             │
 └──────────────────────────────┴────────────┴─────────────────┘
 
 Model: RandomForestClassifier
 Overall Risk: LOW
 
 • MIA advantage score: 0.087 — model shows low Membership Inference vulnerability.
+• PII leakage score: 0.000 — model shows low PII Leakage vulnerability.
 ```
 
 ---
 
 ## ✨ Features
 
-- 🕵️ **Membership Inference Attack (MIA)** — Detect if an attacker can identify training records using a shadow model approach (Shokri et al., 2017)
-- 🌐 **Framework agnostic** — Works with scikit-learn, XGBoost, and any model with `predict_proba()`
+- 🕵️ **Membership Inference Attack (MIA)** — Detect if an attacker can identify training records using shadow model estimation (Shokri et al., 2017)
+- 🔎 **PII Leakage Detection** — Detect sensitive PII (Emails, SSNs, Credit Cards, Phones, IPs) memorized in predictions or samples
+- 🌐 **Framework agnostic** — Works with scikit-learn, XGBoost, and PyTorch models
 - 🎨 **Beautiful terminal output** — Rich colour-coded risk tables with LOW / MEDIUM / HIGH classification
-- 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines
-- 📊 **JSON output** — Machine-readable results for dashboards and reporting
+- 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines (`privacylens audit`)
+- 📊 **JSON output** — Machine-readable results for dashboards and reporting (`--output json`)
 
 **Coming in future releases:**
-- 🔢 PII leakage detection in model embeddings
-- 🔄 Model inversion risk scoring
-- 🤗 HuggingFace Transformers adapter
-- 📄 HTML compliance report export
+- 🔄 Model inversion risk scoring (evaluating feature reconstructability)
+- 📄 HTML compliance report export (Jinja2) for GDPR/HIPAA auditing
+- 🤗 HuggingFace Transformers LLM adapter
 
 ---
 
@@ -76,7 +78,7 @@ pip install "privacyaudit[xgboost]"
 pip install "privacyaudit[all]"
 ```
 
-> **Note**: The PyPI package is `privacyaudit`. Import as `from privacylens import audit`.
+> **Note**: The PyPI package is `privacyaudit`. Import in Python as `from privacylens import audit`.
 
 ---
 
@@ -95,11 +97,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 model = RandomForestClassifier(n_estimators=100)
 model.fit(X_train, y_train)
 
-# Audit it for privacy vulnerabilities
+# Audit it for privacy vulnerabilities (MIA + PII Leakage)
 report = audit(model, X_train, y_train, X_test, y_test)
 report.summary()
 
-# Get results as dict (for JSON logging)
+# Get audit results as dict (for JSON logging or API responses)
 print(report.to_dict())
 ```
 
@@ -108,13 +110,13 @@ print(report.to_dict())
 ## 🖥️ CLI Usage
 
 ```bash
-# Audit a saved model
+# Audit a saved model file
 privacylens audit model.pkl train.csv test.csv
 
-# JSON output for CI/CD integration
+# Output JSON for CI/CD integration
 privacylens audit model.pkl train.csv test.csv --output json
 
-# Skip MIA check
+# Skip MIA check in fast pipelines
 privacylens audit model.pkl train.csv test.csv --no-mia
 ```
 
@@ -125,25 +127,28 @@ privacylens audit model.pkl train.csv test.csv --no-mia
 ```
 privacylens/
 ├── src/privacylens/
-│   ├── __init__.py         # Public API: audit(), AuditReport
-│   ├── auditor.py          # Main orchestrator
+│   ├── __init__.py         # Public API: audit(), AuditReport, PIILeakageAuditor
+│   ├── auditor.py          # Core orchestrator
 │   ├── attacks/
 │   │   └── membership.py   # MIA engine (shadow model + attack classifier)
+│   ├── leakage/
+│   │   └── pii.py          # PII Leakage Auditor (Regex + Severity Weighting)
 │   └── cli.py              # Click CLI
 └── tests/
     ├── test_auditor.py
-    └── test_membership.py
+    ├── test_membership.py
+    └── test_pii_leakage.py
 ```
 
 ---
 
 ## 📖 Risk Score Interpretation
 
-| MIA Score | Risk Level | Meaning |
+| Check Score | Risk Level | Meaning |
 |---|---|---|
-| `0.0 – 0.10` | 🟢 **LOW** | Model reveals minimal membership information |
-| `0.10 – 0.30` | 🟡 **MEDIUM** | Some memorisation risk — review training data |
-| `0.30 – 1.00` | 🔴 **HIGH** | Model likely memorising training records |
+| `0.0 – 0.10` | 🟢 **LOW** | Model reveals minimal membership/PII information |
+| `0.10 – 0.30` | 🟡 **MEDIUM** | Moderate memorisation risk — review training data |
+| `0.30 – 1.00` | 🔴 **HIGH** | Model likely memorising sensitive training data |
 
 ---
 
