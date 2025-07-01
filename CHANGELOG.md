@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2025-07-01
+
+### Added
+- **Model Inversion Risk Scorer**: Added `ModelInversionAuditor` (`src/privacylens/attacks/inversion.py`) implementing Fredrikson et al. (2015) feature reconstruction risk scoring
+- **Inversion Score in AuditReport**: Added `inversion_score` and `inversion_details` to `AuditReport` and Rich summary table
+- **`run_inversion` Flag**: Integrated `run_inversion=True` flag in `audit()` function
+- **Test Suite**: Added `test_inversion.py` unit test suite
+
 ## [0.2.0] — 2025-04-01
 
 ### Added

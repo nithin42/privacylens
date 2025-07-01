@@ -5,8 +5,8 @@
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)](https://github.com/nithin42/privacylens)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.2.0)](https://pypi.org/project/privacyaudit/)
+[![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)](https://github.com/nithin42/privacylens)
+[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.3.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -35,6 +35,7 @@ report.summary()
 ├──────────────────────────────┼────────────┼─────────────────┤
 │ Membership Inference Attack  │ 0.087      │ LOW             │
 │ PII Leakage Detection        │ 0.000      │ LOW             │
+│ Model Inversion Risk         │ 0.042      │ LOW             │
 └──────────────────────────────┴────────────┴─────────────────┘
 
 Model: RandomForestClassifier
@@ -42,6 +43,7 @@ Overall Risk: LOW
 
 • MIA advantage score: 0.087 — model shows low Membership Inference vulnerability.
 • PII leakage score: 0.000 — model shows low PII Leakage vulnerability.
+• Model Inversion score: 0.042 — model shows low Model Inversion vulnerability.
 ```
 
 ---
@@ -50,13 +52,13 @@ Overall Risk: LOW
 
 - 🕵️ **Membership Inference Attack (MIA)** — Detect if an attacker can identify training records using shadow model estimation (Shokri et al., 2017)
 - 🔎 **PII Leakage Detection** — Detect sensitive PII (Emails, SSNs, Credit Cards, Phones, IPs) memorized in predictions or samples
+- 🔄 **Model Inversion Risk Scorer** — Evaluate feature reconstructability risk from output confidence probabilities (Fredrikson et al., 2015)
 - 🌐 **Framework agnostic** — Works with scikit-learn, XGBoost, and PyTorch models
 - 🎨 **Beautiful terminal output** — Rich colour-coded risk tables with LOW / MEDIUM / HIGH classification
 - 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines (`privacylens audit`)
 - 📊 **JSON output** — Machine-readable results for dashboards and reporting (`--output json`)
 
 **Coming in future releases:**
-- 🔄 Model inversion risk scoring (evaluating feature reconstructability)
 - 📄 HTML compliance report export (Jinja2) for GDPR/HIPAA auditing
 - 🤗 HuggingFace Transformers LLM adapter
 
@@ -97,7 +99,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 model = RandomForestClassifier(n_estimators=100)
 model.fit(X_train, y_train)
 
-# Audit it for privacy vulnerabilities (MIA + PII Leakage)
+# Audit it for privacy vulnerabilities (MIA + PII Leakage + Model Inversion)
 report = audit(model, X_train, y_train, X_test, y_test)
 report.summary()
 
@@ -127,17 +129,19 @@ privacylens audit model.pkl train.csv test.csv --no-mia
 ```
 privacylens/
 ├── src/privacylens/
-│   ├── __init__.py         # Public API: audit(), AuditReport, PIILeakageAuditor
+│   ├── __init__.py         # Public API: audit(), AuditReport, Auditors
 │   ├── auditor.py          # Core orchestrator
 │   ├── attacks/
-│   │   └── membership.py   # MIA engine (shadow model + attack classifier)
+│   │   ├── membership.py   # MIA engine (shadow model + attack classifier)
+│   │   └── inversion.py    # Model Inversion Risk Auditor (Fredrikson et al.)
 │   ├── leakage/
 │   │   └── pii.py          # PII Leakage Auditor (Regex + Severity Weighting)
 │   └── cli.py              # Click CLI
 └── tests/
     ├── test_auditor.py
     ├── test_membership.py
-    └── test_pii_leakage.py
+    ├── test_pii_leakage.py
+    └── test_inversion.py
 ```
 
 ---
@@ -146,8 +150,8 @@ privacylens/
 
 | Check Score | Risk Level | Meaning |
 |---|---|---|
-| `0.0 – 0.10` | 🟢 **LOW** | Model reveals minimal membership/PII information |
-| `0.10 – 0.30` | 🟡 **MEDIUM** | Moderate memorisation risk — review training data |
+| `0.0 – 0.10` | 🟢 **LOW** | Model reveals minimal membership/PII/inversion information |
+| `0.10 – 0.30` | 🟡 **MEDIUM** | Moderate risk — review training data exposure |
 | `0.30 – 1.00` | 🔴 **HIGH** | Model likely memorising sensitive training data |
 
 ---
