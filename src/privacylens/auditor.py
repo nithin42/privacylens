@@ -15,6 +15,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from privacylens.attacks.inversion import ModelInversionAuditor
 from privacylens.attacks.membership import MembershipInferenceAuditor
 from privacylens.leakage.pii import PIILeakageAuditor
 
@@ -30,6 +31,8 @@ class AuditReport:
         mia_details: Detailed MIA results dictionary.
         pii_score: PII leakage score (0.0 = clean, 1.0 = severe leakage).
         pii_details: Detailed PII leakage results dictionary.
+        inversion_score: Model inversion risk score (0.0 = safe, 1.0 = high reconstructability).
+        inversion_details: Detailed model inversion results dictionary.
         risk_level: Aggregate risk classification: 'LOW', 'MEDIUM', or 'HIGH'.
         findings: List of plain-language finding strings.
     """
@@ -39,6 +42,8 @@ class AuditReport:
     mia_details: Dict[str, Any] = field(default_factory=dict)
     pii_score: float = 0.0
     pii_details: Dict[str, Any] = field(default_factory=dict)
+    inversion_score: float = 0.0
+    inversion_details: Dict[str, Any] = field(default_factory=dict)
     risk_level: str = "LOW"
     findings: List[str] = field(default_factory=list)
 
@@ -69,6 +74,14 @@ class AuditReport:
             f"[{pii_color}]{pii_risk}[/{pii_color}]",
         )
 
+        inv_risk = _score_to_risk(self.inversion_score)
+        inv_color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(inv_risk, "white")
+        table.add_row(
+            "Model Inversion Risk",
+            f"{self.inversion_score:.3f}",
+            f"[{inv_color}]{inv_risk}[/{inv_color}]",
+        )
+
         console.print(table)
         console.print(
             Panel(
@@ -88,6 +101,8 @@ class AuditReport:
             "mia_details": self.mia_details,
             "pii_score": self.pii_score,
             "pii_details": self.pii_details,
+            "inversion_score": self.inversion_score,
+            "inversion_details": self.inversion_details,
             "risk_level": self.risk_level,
             "findings": self.findings,
         }
@@ -101,6 +116,7 @@ def audit(
     y_test: Optional["np.ndarray"] = None,
     run_mia: bool = True,
     run_pii_leakage: bool = True,
+    run_inversion: bool = True,
 ) -> AuditReport:
     """
     Run a full privacy audit on a trained ML model.
@@ -113,6 +129,7 @@ def audit(
         y_test: Optional held-out test labels.
         run_mia: Whether to run Membership Inference Attack check. Default True.
         run_pii_leakage: Whether to run PII leakage check on samples. Default True.
+        run_inversion: Whether to run Model Inversion risk check. Default True.
 
     Returns:
         AuditReport containing all privacy audit findings and risk scores.
@@ -145,7 +162,17 @@ def audit(
             + _score_explanation(pii_score, "PII Leakage")
         )
 
-    risk_level = _aggregate_risk([mia_score, pii_score])
+    inversion_score = 0.0
+    inversion_details: Dict[str, Any] = {}
+    if run_inversion:
+        inv_auditor = ModelInversionAuditor()
+        inversion_score, inversion_details = inv_auditor.run(model, X_test)
+        findings.append(
+            f"Model Inversion score: {inversion_score:.3f} — "
+            + _score_explanation(inversion_score, "Model Inversion")
+        )
+
+    risk_level = _aggregate_risk([mia_score, pii_score, inversion_score])
 
     return AuditReport(
         model_type=model_type,
@@ -153,6 +180,8 @@ def audit(
         mia_details=mia_details,
         pii_score=pii_score,
         pii_details=pii_details,
+        inversion_score=inversion_score,
+        inversion_details=inversion_details,
         risk_level=risk_level,
         findings=findings,
     )
