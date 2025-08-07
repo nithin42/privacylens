@@ -297,3 +297,5 @@ def _score_explanation(score: float, check: str) -> str:
 # dev note: build trace 2025-08-01
 
 # dev note: build trace 2025-08-05
+
+# dev note: build trace 2025-08-07
