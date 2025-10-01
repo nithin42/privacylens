@@ -5,8 +5,8 @@
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)](https://github.com/nithin42/privacylens)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.3.0)](https://pypi.org/project/privacyaudit/)
+[![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen)](https://github.com/nithin42/privacylens)
+[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.4.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -53,7 +53,7 @@ Overall Risk: LOW
 - 🕵️ **Membership Inference Attack (MIA)** — Detect if an attacker can identify training records using shadow model estimation (Shokri et al., 2017)
 - 🔎 **PII Leakage Detection** — Detect sensitive PII (Emails, SSNs, Credit Cards, Phones, IPs) memorized in predictions or samples
 - 🔄 **Model Inversion Risk Scorer** — Evaluate feature reconstructability risk from output confidence probabilities (Fredrikson et al., 2015)
-- 🌐 **Framework agnostic** — Works with scikit-learn, XGBoost, and PyTorch models
+- 🌐 **Native Framework Adapters** — Out-of-the-box support for scikit-learn, PyTorch (`nn.Module`), and XGBoost models
 - 🎨 **Beautiful terminal output** — Rich colour-coded risk tables with LOW / MEDIUM / HIGH classification
 - 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines (`privacylens audit`)
 - 📊 **JSON output** — Machine-readable results for dashboards and reporting (`--output json`)
@@ -129,8 +129,13 @@ privacylens audit model.pkl train.csv test.csv --no-mia
 ```
 privacylens/
 ├── src/privacylens/
-│   ├── __init__.py         # Public API: audit(), AuditReport, Auditors
+│   ├── __init__.py         # Public API: audit(), AuditReport, Auditors, Adapters
 │   ├── auditor.py          # Core orchestrator
+│   ├── adapters/
+│   │   ├── base.py         # BaseModelAdapter & get_adapter() factory
+│   │   ├── sklearn_adapter.py
+│   │   ├── pytorch_adapter.py
+│   │   └── xgboost_adapter.py
 │   ├── attacks/
 │   │   ├── membership.py   # MIA engine (shadow model + attack classifier)
 │   │   └── inversion.py    # Model Inversion Risk Auditor (Fredrikson et al.)
@@ -141,7 +146,8 @@ privacylens/
     ├── test_auditor.py
     ├── test_membership.py
     ├── test_pii_leakage.py
-    └── test_inversion.py
+    ├── test_inversion.py
+    └── test_adapters.py
 ```
 
 ---
