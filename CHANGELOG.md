@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2025-10-01
+
+### Added
+- **Native Framework Adapters**: Added `src/privacylens/adapters/` containing `BaseModelAdapter`, `SklearnAdapter`, `PyTorchAdapter`, and `XGBoostAdapter`
+- **Automatic Model Factory**: Added `get_adapter(model)` factory function for seamless model wrapper instantiation
+- **PyTorch Softmax Logit Normalization**: Automatically converts raw neural network output logits into probabilities
+- **Test Suite**: Added `test_adapters.py` unit test suite
+
 ## [0.3.0] — 2025-07-01
 
 ### Added
