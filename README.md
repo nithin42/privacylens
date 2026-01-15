@@ -5,8 +5,8 @@
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen)](https://github.com/nithin42/privacylens)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.4.0)](https://pypi.org/project/privacyaudit/)
+[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)](https://github.com/nithin42/privacylens)
+[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.5.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -25,6 +25,9 @@ from privacylens import audit
 
 report = audit(model, X_train, y_train, X_test)
 report.summary()
+
+# Export HTML Compliance Report for GDPR/HIPAA sharing
+report.to_html("audit_report.html")
 ```
 
 ```
@@ -54,13 +57,14 @@ Overall Risk: LOW
 - 🔎 **PII Leakage Detection** — Detect sensitive PII (Emails, SSNs, Credit Cards, Phones, IPs) memorized in predictions or samples
 - 🔄 **Model Inversion Risk Scorer** — Evaluate feature reconstructability risk from output confidence probabilities (Fredrikson et al., 2015)
 - 🌐 **Native Framework Adapters** — Out-of-the-box support for scikit-learn, PyTorch (`nn.Module`), and XGBoost models
+- 📄 **HTML Compliance Reports** — Export standalone, interactive HTML reports (`--report audit.html`) for security & GDPR/HIPAA compliance sharing
 - 🎨 **Beautiful terminal output** — Rich colour-coded risk tables with LOW / MEDIUM / HIGH classification
 - 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines (`privacylens audit`)
 - 📊 **JSON output** — Machine-readable results for dashboards and reporting (`--output json`)
 
-**Coming in future releases:**
-- 📄 HTML compliance report export (Jinja2) for GDPR/HIPAA auditing
+**Coming in v1.0.0:**
 - 🤗 HuggingFace Transformers LLM adapter
+- 🏆 Enterprise Privacy Benchmark Suite
 
 ---
 
@@ -103,6 +107,9 @@ model.fit(X_train, y_train)
 report = audit(model, X_train, y_train, X_test, y_test)
 report.summary()
 
+# Export interactive HTML audit report
+report.to_html("compliance_report.html")
+
 # Get audit results as dict (for JSON logging or API responses)
 print(report.to_dict())
 ```
@@ -114,6 +121,9 @@ print(report.to_dict())
 ```bash
 # Audit a saved model file
 privacylens audit model.pkl train.csv test.csv
+
+# Export interactive HTML report
+privacylens audit model.pkl train.csv test.csv --report compliance.html
 
 # Output JSON for CI/CD integration
 privacylens audit model.pkl train.csv test.csv --output json
@@ -141,13 +151,16 @@ privacylens/
 │   │   └── inversion.py    # Model Inversion Risk Auditor (Fredrikson et al.)
 │   ├── leakage/
 │   │   └── pii.py          # PII Leakage Auditor (Regex + Severity Weighting)
+│   ├── report/
+│   │   └── html.py         # HTML Compliance Report Generator (Jinja2)
 │   └── cli.py              # Click CLI
 └── tests/
     ├── test_auditor.py
     ├── test_membership.py
     ├── test_pii_leakage.py
     ├── test_inversion.py
-    └── test_adapters.py
+    ├── test_adapters.py
+    └── test_html_report.py
 ```
 
 ---

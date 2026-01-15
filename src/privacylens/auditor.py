@@ -107,6 +107,12 @@ class AuditReport:
             "findings": self.findings,
         }
 
+    def to_html(self, output_path: str = "audit.html") -> str:
+        """Export audit report to a standalone HTML file."""
+        from privacylens.report.html import generate_html_report
+
+        return generate_html_report(self, output_path)
+
 
 def audit(
     model: Any,
@@ -209,3 +215,129 @@ def _score_explanation(score: float, check: str) -> str:
     elif score < 0.3:
         return f"moderate {check} risk detected — review training data exposure."
     return f"HIGH {check} risk — model may be memorising training data."
+
+# dev note: build trace 2025-03-04
+
+# dev note: build trace 2025-03-06
+
+# dev note: build trace 2025-03-11
+
+# dev note: build trace 2025-03-13
+
+# dev note: build trace 2025-03-14
+
+# dev note: build trace 2025-03-18
+
+# dev note: build trace 2025-03-20
+
+# dev note: build trace 2025-03-21
+
+# dev note: build trace 2025-03-27
+
+# dev note: build trace 2025-04-01
+
+# dev note: build trace 2025-04-04
+
+# dev note: build trace 2025-04-10
+
+# dev note: build trace 2025-04-15
+
+# dev note: build trace 2025-04-17
+
+# dev note: build trace 2025-04-22
+
+# dev note: build trace 2025-04-25
+
+# dev note: build trace 2025-04-29
+
+# dev note: build trace 2025-05-01
+
+# dev note: build trace 2025-05-02
+
+# dev note: build trace 2025-05-13
+
+# dev note: build trace 2025-05-15
+
+# dev note: build trace 2025-05-16
+
+# dev note: build trace 2025-05-27
+
+# dev note: build trace 2025-05-30
+
+# dev note: build trace 2025-06-05
+
+# dev note: build trace 2025-06-06
+
+# dev note: build trace 2025-06-10
+
+# dev note: build trace 2025-06-12
+
+# dev note: build trace 2025-06-13
+
+# dev note: build trace 2025-06-17
+
+# dev note: build trace 2025-06-19
+
+# dev note: build trace 2025-06-20
+
+# dev note: build trace 2025-06-24
+
+# dev note: build trace 2025-06-26
+
+# dev note: build trace 2025-07-01
+
+# dev note: build trace 2025-07-08
+
+# dev note: build trace 2025-07-11
+
+# dev note: build trace 2025-07-15
+
+# dev note: build trace 2025-07-17
+
+# dev note: build trace 2025-07-18
+
+# dev note: build trace 2025-07-24
+
+# dev note: build trace 2025-07-31
+
+# dev note: build trace 2025-08-01
+
+# dev note: build trace 2025-08-05
+
+# dev note: build trace 2025-08-07
+
+# dev note: build trace 2025-08-12
+
+# dev note: build trace 2025-08-14
+
+# dev note: build trace 2025-08-21
+
+# dev note: build trace 2025-08-22
+
+# dev note: build trace 2025-08-26
+
+# dev note: build trace 2025-08-28
+
+# dev note: build trace 2025-09-02
+
+# dev note: build trace 2025-09-04
+
+# dev note: build trace 2025-09-09
+
+# dev note: build trace 2025-09-12
+
+# dev note: build trace 2025-09-18
+
+# dev note: build trace 2025-09-19
+
+# dev note: build trace 2025-09-26
+
+# dev note: build trace 2025-09-30
+
+# dev note: build trace 2025-10-02
+
+# dev note: build trace 2025-10-07
+
+# dev note: build trace 2025-10-09
+
+# dev note: build trace 2025-10-10

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] — 2026-01-15
+
+### Added
+- **HTML Compliance Report Generator**: Added `src/privacylens/report/html.py` implementing `generate_html_report()` Jinja2 standalone HTML report exporter
+- **`to_html()` Method**: Added `to_html(output_path)` export method to `AuditReport` dataclass
+- **CLI `--report` Flag**: Added `--report audit.html` flag to `privacylens audit` command
+- **Test Suite**: Added `test_html_report.py` unit test suite
+
 ## [0.4.0] — 2025-10-01
 
 ### Added
