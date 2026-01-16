@@ -50,7 +50,7 @@ def get_adapter(model: Any) -> BaseModelAdapter:
     Returns:
         BaseModelAdapter instance wrapping the model.
     """
-    model_module = type(model).__module__.lower()
+    model_module = (getattr(model, "__module__", "") or type(model).__module__).lower()
     model_name = type(model).__name__.lower()
 
     if "torch" in model_module or "module" in model_name:
