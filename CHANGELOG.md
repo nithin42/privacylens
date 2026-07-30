@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.0] — 2026-07-31
+
+### Added
+- **HuggingFace Transformers Adapter**: Added `HuggingFaceAdapter` (`src/privacylens/adapters/hf_adapter.py`) to audit LLM embeddings and classification pipelines for privacy leakage
+- **Benchmark Suite**: Added `examples/benchmark_demo.py` showcasing full end-to-end privacy auditing across scikit-learn, XGBoost, PyTorch, and HuggingFace models
+- **Test Suite**: Added `test_hf_adapter.py` unit test suite
+- **Production Flagship Release**: General Availability (GA) v1.0.0
+
 ## [0.5.0] — 2026-01-15
 
 ### Added
