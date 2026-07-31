@@ -42,14 +42,16 @@ class TestMembershipInferenceAuditor:
         assert "n_nonmembers_evaluated" in details
 
     def test_no_predict_proba_model(self, rf_data):
-        """SVC without probability=True has no predict_proba — should return 0.0 gracefully."""
+        """SVC without probability=True has no predict_proba but has decision_function.
+        The auditor should still run via decision_function and return a valid score."""
         _, X_train, y_train, X_test, y_test = rf_data
         svc = SVC(probability=False)
         svc.fit(X_train, y_train)
         auditor = MembershipInferenceAuditor()
         score, details = auditor.run(svc, X_train, y_train, X_test, y_test)
-        assert score == 0.0
-        assert "error" in details
+        assert isinstance(score, float)
+        assert 0.0 <= score <= 1.0
+        assert "attack_accuracy" in details
 
     def test_rf_attack_model(self, rf_data):
         model, X_train, y_train, X_test, y_test = rf_data
