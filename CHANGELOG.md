@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] — 2026-07-31
+
+### Added
+- **Attribute Inference Attack Auditor**: Added `AttributeInferenceAuditor` (`src/privacylens/attacks/attribute.py`) implementing Yeom et al. (2018) sensitive attribute prediction risk scoring
+- **Empirical Differential Privacy Epsilon Estimator**: Added `DPEpsilonAuditor` (`src/privacylens/leakage/dp.py`) implementing Jagielski et al. (2020) empirical privacy loss ($\epsilon$) estimation
+- **5-Point Privacy Audit Suite**: Updated `AuditReport`, terminal table, and HTML compliance reports to display all 5 privacy vulnerability checks
+- **Test Suite**: Added unit tests for attribute inference and differential privacy auditors
+
 ## [1.0.0] — 2026-07-31
 
 ### Added
