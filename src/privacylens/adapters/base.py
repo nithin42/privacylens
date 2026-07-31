@@ -53,7 +53,10 @@ def get_adapter(model: Any) -> BaseModelAdapter:
     model_module = (getattr(model, "__module__", "") or type(model).__module__).lower()
     model_name = type(model).__name__.lower()
 
-    if "torch" in model_module or "module" in model_name:
+    if "transformers" in model_module or "huggingface" in model_module or "hf" in model_name:
+        from privacylens.adapters.hf_adapter import HuggingFaceAdapter
+        return HuggingFaceAdapter(model)
+    elif "torch" in model_module or "module" in model_name:
         from privacylens.adapters.pytorch_adapter import PyTorchAdapter
         return PyTorchAdapter(model)
     elif "xgboost" in model_module or "xgb" in model_name:

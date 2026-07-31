@@ -5,8 +5,8 @@
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)](https://github.com/nithin42/privacylens)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=0.5.0)](https://pypi.org/project/privacyaudit/)
+[![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)](https://github.com/nithin42/privacylens)
+[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=1.0.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -56,15 +56,11 @@ Overall Risk: LOW
 - 🕵️ **Membership Inference Attack (MIA)** — Detect if an attacker can identify training records using shadow model estimation (Shokri et al., 2017)
 - 🔎 **PII Leakage Detection** — Detect sensitive PII (Emails, SSNs, Credit Cards, Phones, IPs) memorized in predictions or samples
 - 🔄 **Model Inversion Risk Scorer** — Evaluate feature reconstructability risk from output confidence probabilities (Fredrikson et al., 2015)
-- 🌐 **Native Framework Adapters** — Out-of-the-box support for scikit-learn, PyTorch (`nn.Module`), and XGBoost models
+- 🌐 **Native Framework Adapters** — Out-of-the-box support for scikit-learn, PyTorch (`nn.Module`), XGBoost, and HuggingFace Transformers
 - 📄 **HTML Compliance Reports** — Export standalone, interactive HTML reports (`--report audit.html`) for security & GDPR/HIPAA compliance sharing
 - 🎨 **Beautiful terminal output** — Rich colour-coded risk tables with LOW / MEDIUM / HIGH classification
 - 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines (`privacylens audit`)
 - 📊 **JSON output** — Machine-readable results for dashboards and reporting (`--output json`)
-
-**Coming in v1.0.0:**
-- 🤗 HuggingFace Transformers LLM adapter
-- 🏆 Enterprise Privacy Benchmark Suite
 
 ---
 
@@ -80,7 +76,7 @@ pip install "privacyaudit[torch]"
 # With XGBoost support
 pip install "privacyaudit[xgboost]"
 
-# Everything
+# Everything (PyTorch, XGBoost, Transformers)
 pip install "privacyaudit[all]"
 ```
 
@@ -145,7 +141,8 @@ privacylens/
 │   │   ├── base.py         # BaseModelAdapter & get_adapter() factory
 │   │   ├── sklearn_adapter.py
 │   │   ├── pytorch_adapter.py
-│   │   └── xgboost_adapter.py
+│   │   ├── xgboost_adapter.py
+│   │   └── hf_adapter.py   # HuggingFace Transformers Adapter
 │   ├── attacks/
 │   │   ├── membership.py   # MIA engine (shadow model + attack classifier)
 │   │   └── inversion.py    # Model Inversion Risk Auditor (Fredrikson et al.)
@@ -154,13 +151,16 @@ privacylens/
 │   ├── report/
 │   │   └── html.py         # HTML Compliance Report Generator (Jinja2)
 │   └── cli.py              # Click CLI
+├── examples/
+│   └── benchmark_demo.py   # Flagship Enterprise Privacy Audit Benchmark
 └── tests/
     ├── test_auditor.py
     ├── test_membership.py
     ├── test_pii_leakage.py
     ├── test_inversion.py
     ├── test_adapters.py
-    └── test_html_report.py
+    ├── test_html_report.py
+    └── test_hf_adapter.py
 ```
 
 ---
