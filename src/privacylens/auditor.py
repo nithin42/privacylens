@@ -63,7 +63,7 @@ class AuditReport:
 
         color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(self.risk_level, "white")
 
-        table = Table(title="🔍 privacylens — 5-Point Privacy Audit Report", show_lines=True)
+        table = Table(title="privacylens — 5-Point Privacy Audit Report", show_lines=True)
         table.add_column("Check", style="bold cyan", width=34)
         table.add_column("Score", justify="center", width=12)
         table.add_column("Risk", justify="center", width=10)
@@ -73,7 +73,7 @@ class AuditReport:
             ("PII Leakage Detection", self.pii_score),
             ("Model Inversion Risk", self.inversion_score),
             ("Attribute Inference Risk", self.attribute_score),
-            ("Differential Privacy (ε)", self.dp_score),
+            ("Differential Privacy (Epsilon)", self.dp_score),
         ]
 
         for name, score in checks:
@@ -86,7 +86,7 @@ class AuditReport:
             Panel(
                 f"[bold]Model:[/bold] {self.model_type}\n"
                 f"[bold]Overall Risk:[/bold] [{color}]{self.risk_level}[/{color}]\n\n"
-                + "\n".join(f"• {f}" for f in self.findings),
+                + "\n".join(f"- {f}" for f in self.findings),
                 title="[bold]Audit Summary[/bold]",
                 border_style=color,
             )
@@ -157,7 +157,7 @@ def audit(
         auditor = MembershipInferenceAuditor()
         mia_score, mia_details = auditor.run(model, X_train, y_train, X_test, y_test)
         findings.append(
-            f"MIA advantage score: {mia_score:.3f} — "
+            f"MIA advantage score: {mia_score:.3f} - "
             + _score_explanation(mia_score, "Membership Inference")
         )
 
@@ -168,7 +168,7 @@ def audit(
         pii_auditor = PIILeakageAuditor()
         pii_score, pii_details = pii_auditor.run(model, X_train, y_train)
         findings.append(
-            f"PII leakage score: {pii_score:.3f} — "
+            f"PII leakage score: {pii_score:.3f} - "
             + _score_explanation(pii_score, "PII Leakage")
         )
 
@@ -179,7 +179,7 @@ def audit(
         inv_auditor = ModelInversionAuditor()
         inversion_score, inversion_details = inv_auditor.run(model, X_test)
         findings.append(
-            f"Model Inversion score: {inversion_score:.3f} — "
+            f"Model Inversion score: {inversion_score:.3f} - "
             + _score_explanation(inversion_score, "Model Inversion")
         )
 
@@ -190,7 +190,7 @@ def audit(
         attr_auditor = AttributeInferenceAuditor()
         attribute_score, attribute_details = attr_auditor.run(model, X_test)
         findings.append(
-            f"Attribute Inference score: {attribute_score:.3f} — "
+            f"Attribute Inference score: {attribute_score:.3f} - "
             + _score_explanation(attribute_score, "Attribute Inference")
         )
 
@@ -201,7 +201,7 @@ def audit(
         dp_auditor = DPEpsilonAuditor()
         dp_score, dp_details = dp_auditor.run(model, X_test)
         findings.append(
-            f"Differential Privacy score: {dp_score:.3f} — "
+            f"Differential Privacy score: {dp_score:.3f} - "
             + _score_explanation(dp_score, "Differential Privacy")
         )
 
@@ -245,5 +245,5 @@ def _score_explanation(score: float, check: str) -> str:
     if score < 0.1:
         return f"model shows low {check} vulnerability."
     elif score < 0.3:
-        return f"moderate {check} risk detected — review training data exposure."
-    return f"HIGH {check} risk — model may be memorising sensitive training data."
+        return f"moderate {check} risk detected - review training data exposure."
+    return f"HIGH {check} risk - model may be memorising sensitive training data."
