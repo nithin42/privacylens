@@ -30,16 +30,16 @@ report.summary()
 report.to_html("audit_report.html")
 ```
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│             🔍 privacylens — Privacy Audit Report            │
-├──────────────────────────────┬────────────┬─────────────────┤
-│ Check                        │ Score      │ Risk            │
-├──────────────────────────────┼────────────┼─────────────────┤
-│ Membership Inference Attack  │ 0.087      │ LOW             │
-│ PII Leakage Detection        │ 0.000      │ LOW             │
-│ Model Inversion Risk         │ 0.042      │ LOW             │
-└──────────────────────────────┴────────────┴─────────────────┘
+```text
++-------------------------------------------------------------+
+|             privacylens — Privacy Audit Report              |
++------------------------------+------------+-----------------+
+| Check                        | Score      | Risk            |
++------------------------------+------------+-----------------+
+| Membership Inference Attack  | 0.087      | LOW             |
+| PII Leakage Detection        | 0.000      | LOW             |
+| Model Inversion Risk         | 0.042      | LOW             |
++------------------------------+------------+-----------------+
 
 Model: RandomForestClassifier
 Overall Risk: LOW
