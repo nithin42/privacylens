@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from typing import Optional
 
 import click
 from rich.console import Console
@@ -23,9 +24,11 @@ def cli() -> None:
 @click.argument("test_data", type=click.Path(exists=True))
 @click.option("--output", "-o", type=click.Choice(["terminal", "json"]), default="terminal",
               help="Output format: terminal table or JSON.")
+@click.option("--report", type=click.Path(), default=None,
+              help="Export HTML audit report to target file path (e.g. audit.html).")
 @click.option("--no-mia", is_flag=True, default=False,
               help="Skip Membership Inference Attack check.")
-def audit(model_path: str, train_data: str, test_data: str, output: str, no_mia: bool) -> None:
+def audit(model_path: str, train_data: str, test_data: str, output: str, report: Optional[str], no_mia: bool) -> None:
     """
     Audit a trained model for privacy vulnerabilities.
 
@@ -37,7 +40,7 @@ def audit(model_path: str, train_data: str, test_data: str, output: str, no_mia:
 
         privacylens audit model.pkl train.csv test.csv
 
-        privacylens audit model.pkl train.csv test.csv --output json
+        privacylens audit model.pkl train.csv test.csv --report audit.html
     """
     import joblib
     import pandas as pd
@@ -62,12 +65,16 @@ def audit(model_path: str, train_data: str, test_data: str, output: str, no_mia:
         console.print(f"[red]❌ Failed to load data: {e}[/red]")
         sys.exit(1)
 
-    report = run_audit(model, X_train, y_train, X_test, y_test, run_mia=not no_mia)
+    audit_report = run_audit(model, X_train, y_train, X_test, y_test, run_mia=not no_mia)
+
+    if report:
+        out_file = audit_report.to_html(report)
+        console.print(f"[green]✅ HTML Audit Report exported to: {out_file}[/green]")
 
     if output == "json":
-        console.print_json(json.dumps(report.to_dict(), indent=2))
+        console.print_json(json.dumps(audit_report.to_dict(), indent=2))
     else:
-        report.summary()
+        audit_report.summary()
 
 
 def main() -> None:

@@ -107,6 +107,12 @@ class AuditReport:
             "findings": self.findings,
         }
 
+    def to_html(self, output_path: str = "audit.html") -> str:
+        """Export audit report to a standalone HTML file."""
+        from privacylens.report.html import generate_html_report
+
+        return generate_html_report(self, output_path)
+
 
 def audit(
     model: Any,
