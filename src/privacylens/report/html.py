@@ -19,7 +19,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>privacylens — Privacy Audit Report</title>
+    <title>privacylens — 5-Point Privacy Audit Report</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -40,7 +40,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             padding: 40px 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         .header {
@@ -64,28 +64,29 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .badge-low { background-color: rgba(34, 197, 94, 0.2); color: var(--low-color); border: 1px solid var(--low-color); }
         .badge-medium { background-color: rgba(234, 179, 8, 0.2); color: var(--med-color); border: 1px solid var(--med-color); }
         .badge-high { background-color: rgba(239, 68, 68, 0.2); color: var(--high-color); border: 1px solid var(--high-color); }
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
             margin: 30px 0;
         }
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 24px;
+            padding: 20px 16px;
             text-align: center;
         }
         .card h3 {
-            margin: 0 0 12px 0;
+            margin: 0 0 10px 0;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
         .score {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: bold;
             margin-bottom: 8px;
         }
@@ -120,7 +121,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔍 privacylens — Privacy Audit Report</h1>
+            <h1>🔍 privacylens — 5-Point Privacy Audit Report</h1>
             <p style="color: var(--text-muted);">Model: <strong>{{ report.model_type }}</strong></p>
             <div>
                 Overall Risk Level:
@@ -135,14 +136,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <div><span class="badge badge-{{ get_risk(report.mia_score).lower() }}">{{ get_risk(report.mia_score) }}</span></div>
             </div>
             <div class="card">
-                <h3>PII Leakage Score</h3>
+                <h3>PII Leakage</h3>
                 <div class="score" style="color: {{ get_color(report.pii_score) }};">{{ "%.3f"|format(report.pii_score) }}</div>
                 <div><span class="badge badge-{{ get_risk(report.pii_score).lower() }}">{{ get_risk(report.pii_score) }}</span></div>
             </div>
             <div class="card">
-                <h3>Model Inversion Risk</h3>
+                <h3>Model Inversion</h3>
                 <div class="score" style="color: {{ get_color(report.inversion_score) }};">{{ "%.3f"|format(report.inversion_score) }}</div>
                 <div><span class="badge badge-{{ get_risk(report.inversion_score).lower() }}">{{ get_risk(report.inversion_score) }}</span></div>
+            </div>
+            <div class="card">
+                <h3>Attribute Inference</h3>
+                <div class="score" style="color: {{ get_color(report.attribute_score) }};">{{ "%.3f"|format(report.attribute_score) }}</div>
+                <div><span class="badge badge-{{ get_risk(report.attribute_score).lower() }}">{{ get_risk(report.attribute_score) }}</span></div>
+            </div>
+            <div class="card">
+                <h3>Differential Privacy (ε)</h3>
+                <div class="score" style="color: {{ get_color(report.dp_score) }};">{{ "%.3f"|format(report.dp_score) }}</div>
+                <div><span class="badge badge-{{ get_risk(report.dp_score).lower() }}">{{ get_risk(report.dp_score) }}</span></div>
             </div>
         </div>
 
