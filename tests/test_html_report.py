@@ -25,7 +25,7 @@ class TestHTMLReport:
         with open(res_path, "r", encoding="utf-8") as f:
             html = f.read()
 
-        assert "privacylens — Privacy Audit Report" in html
+        assert "privacylens — 5-Point Privacy Audit Report" in html
         assert "RandomForestClassifier" in html
         assert "Membership Inference" in html
 
