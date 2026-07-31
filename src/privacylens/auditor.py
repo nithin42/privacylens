@@ -1,8 +1,8 @@
 """
 Core auditor orchestrator for privacylens.
 
-Provides the primary `audit()` entry point that runs all enabled
-privacy audit checks against a trained ML model.
+Provides the primary `audit()` entry point that runs all 5 privacy
+vulnerability checks against a trained ML model.
 """
 
 from __future__ import annotations
@@ -15,15 +15,17 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from privacylens.attacks.attribute import AttributeInferenceAuditor
 from privacylens.attacks.inversion import ModelInversionAuditor
 from privacylens.attacks.membership import MembershipInferenceAuditor
+from privacylens.leakage.dp import DPEpsilonAuditor
 from privacylens.leakage.pii import PIILeakageAuditor
 
 
 @dataclass
 class AuditReport:
     """
-    Container for all privacy audit results produced by privacylens.
+    Container for all 5 privacy audit results produced by privacylens.
 
     Attributes:
         model_type: String label of the model class (e.g. 'RandomForestClassifier').
@@ -33,6 +35,10 @@ class AuditReport:
         pii_details: Detailed PII leakage results dictionary.
         inversion_score: Model inversion risk score (0.0 = safe, 1.0 = high reconstructability).
         inversion_details: Detailed model inversion results dictionary.
+        attribute_score: Attribute inference risk score (0.0 = safe, 1.0 = high leakage).
+        attribute_details: Detailed attribute inference results dictionary.
+        dp_score: Empirical Differential Privacy risk score (0.0 = strong DP, 1.0 = high privacy loss).
+        dp_details: Detailed DP results dictionary.
         risk_level: Aggregate risk classification: 'LOW', 'MEDIUM', or 'HIGH'.
         findings: List of plain-language finding strings.
     """
@@ -44,43 +50,36 @@ class AuditReport:
     pii_details: Dict[str, Any] = field(default_factory=dict)
     inversion_score: float = 0.0
     inversion_details: Dict[str, Any] = field(default_factory=dict)
+    attribute_score: float = 0.0
+    attribute_details: Dict[str, Any] = field(default_factory=dict)
+    dp_score: float = 0.0
+    dp_details: Dict[str, Any] = field(default_factory=dict)
     risk_level: str = "LOW"
     findings: List[str] = field(default_factory=list)
 
     def summary(self) -> None:
-        """Print a Rich-formatted privacy audit summary to the terminal."""
+        """Print a Rich-formatted privacy audit summary showing all 5 checks."""
         console = Console()
 
         color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(self.risk_level, "white")
 
-        table = Table(title="🔍 privacylens — Privacy Audit Report", show_lines=True)
-        table.add_column("Check", style="bold cyan", width=30)
+        table = Table(title="🔍 privacylens — 5-Point Privacy Audit Report", show_lines=True)
+        table.add_column("Check", style="bold cyan", width=34)
         table.add_column("Score", justify="center", width=12)
         table.add_column("Risk", justify="center", width=10)
 
-        mia_risk = _score_to_risk(self.mia_score)
-        mia_color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(mia_risk, "white")
-        table.add_row(
-            "Membership Inference Attack",
-            f"{self.mia_score:.3f}",
-            f"[{mia_color}]{mia_risk}[/{mia_color}]",
-        )
+        checks = [
+            ("Membership Inference Attack", self.mia_score),
+            ("PII Leakage Detection", self.pii_score),
+            ("Model Inversion Risk", self.inversion_score),
+            ("Attribute Inference Risk", self.attribute_score),
+            ("Differential Privacy (ε)", self.dp_score),
+        ]
 
-        pii_risk = _score_to_risk(self.pii_score)
-        pii_color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(pii_risk, "white")
-        table.add_row(
-            "PII Leakage Detection",
-            f"{self.pii_score:.3f}",
-            f"[{pii_color}]{pii_risk}[/{pii_color}]",
-        )
-
-        inv_risk = _score_to_risk(self.inversion_score)
-        inv_color = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(inv_risk, "white")
-        table.add_row(
-            "Model Inversion Risk",
-            f"{self.inversion_score:.3f}",
-            f"[{inv_color}]{inv_risk}[/{inv_color}]",
-        )
+        for name, score in checks:
+            risk = _score_to_risk(score)
+            c = {"LOW": "green", "MEDIUM": "yellow", "HIGH": "red"}.get(risk, "white")
+            table.add_row(name, f"{score:.3f}", f"[{c}]{risk}[/{c}]")
 
         console.print(table)
         console.print(
@@ -103,6 +102,10 @@ class AuditReport:
             "pii_details": self.pii_details,
             "inversion_score": self.inversion_score,
             "inversion_details": self.inversion_details,
+            "attribute_score": self.attribute_score,
+            "attribute_details": self.attribute_details,
+            "dp_score": self.dp_score,
+            "dp_details": self.dp_details,
             "risk_level": self.risk_level,
             "findings": self.findings,
         }
@@ -123,31 +126,31 @@ def audit(
     run_mia: bool = True,
     run_pii_leakage: bool = True,
     run_inversion: bool = True,
+    run_attribute: bool = True,
+    run_dp: bool = True,
 ) -> AuditReport:
     """
-    Run a full privacy audit on a trained ML model.
+    Run a full 5-point privacy audit on a trained ML model.
 
     Args:
-        model: A trained model object (scikit-learn, XGBoost, or PyTorch).
-        X_train: Training feature matrix used to train the model.
-        y_train: Training labels used to train the model.
-        X_test: Held-out test feature matrix (not seen during training).
+        model: A trained model object (scikit-learn, XGBoost, PyTorch, or HuggingFace).
+        X_train: Training feature matrix.
+        y_train: Training labels.
+        X_test: Held-out test feature matrix.
         y_test: Optional held-out test labels.
         run_mia: Whether to run Membership Inference Attack check. Default True.
-        run_pii_leakage: Whether to run PII leakage check on samples. Default True.
+        run_pii_leakage: Whether to run PII leakage check. Default True.
         run_inversion: Whether to run Model Inversion risk check. Default True.
+        run_attribute: Whether to run Attribute Inference check. Default True.
+        run_dp: Whether to run Differential Privacy epsilon check. Default True.
 
     Returns:
-        AuditReport containing all privacy audit findings and risk scores.
-
-    Example:
-        >>> from privacylens import audit
-        >>> report = audit(model, X_train, y_train, X_test)
-        >>> report.summary()
+        AuditReport containing all 5 privacy audit findings and risk scores.
     """
     model_type = type(model).__name__
     findings: List[str] = []
 
+    # Check 1: Membership Inference Attack
     mia_score = 0.0
     mia_details: Dict[str, Any] = {}
     if run_mia:
@@ -158,6 +161,7 @@ def audit(
             + _score_explanation(mia_score, "Membership Inference")
         )
 
+    # Check 2: PII Leakage
     pii_score = 0.0
     pii_details: Dict[str, Any] = {}
     if run_pii_leakage:
@@ -168,6 +172,7 @@ def audit(
             + _score_explanation(pii_score, "PII Leakage")
         )
 
+    # Check 3: Model Inversion
     inversion_score = 0.0
     inversion_details: Dict[str, Any] = {}
     if run_inversion:
@@ -178,7 +183,30 @@ def audit(
             + _score_explanation(inversion_score, "Model Inversion")
         )
 
-    risk_level = _aggregate_risk([mia_score, pii_score, inversion_score])
+    # Check 4: Attribute Inference
+    attribute_score = 0.0
+    attribute_details: Dict[str, Any] = {}
+    if run_attribute:
+        attr_auditor = AttributeInferenceAuditor()
+        attribute_score, attribute_details = attr_auditor.run(model, X_test)
+        findings.append(
+            f"Attribute Inference score: {attribute_score:.3f} — "
+            + _score_explanation(attribute_score, "Attribute Inference")
+        )
+
+    # Check 5: Differential Privacy (Epsilon)
+    dp_score = 0.0
+    dp_details: Dict[str, Any] = {}
+    if run_dp:
+        dp_auditor = DPEpsilonAuditor()
+        dp_score, dp_details = dp_auditor.run(model, X_test)
+        findings.append(
+            f"Differential Privacy score: {dp_score:.3f} — "
+            + _score_explanation(dp_score, "Differential Privacy")
+        )
+
+    all_scores = [mia_score, pii_score, inversion_score, attribute_score, dp_score]
+    risk_level = _aggregate_risk(all_scores)
 
     return AuditReport(
         model_type=model_type,
@@ -188,6 +216,10 @@ def audit(
         pii_details=pii_details,
         inversion_score=inversion_score,
         inversion_details=inversion_details,
+        attribute_score=attribute_score,
+        attribute_details=attribute_details,
+        dp_score=dp_score,
+        dp_details=dp_details,
         risk_level=risk_level,
         findings=findings,
     )
@@ -214,130 +246,4 @@ def _score_explanation(score: float, check: str) -> str:
         return f"model shows low {check} vulnerability."
     elif score < 0.3:
         return f"moderate {check} risk detected — review training data exposure."
-    return f"HIGH {check} risk — model may be memorising training data."
-
-# dev note: build trace 2025-03-04
-
-# dev note: build trace 2025-03-06
-
-# dev note: build trace 2025-03-11
-
-# dev note: build trace 2025-03-13
-
-# dev note: build trace 2025-03-14
-
-# dev note: build trace 2025-03-18
-
-# dev note: build trace 2025-03-20
-
-# dev note: build trace 2025-03-21
-
-# dev note: build trace 2025-03-27
-
-# dev note: build trace 2025-04-01
-
-# dev note: build trace 2025-04-04
-
-# dev note: build trace 2025-04-10
-
-# dev note: build trace 2025-04-15
-
-# dev note: build trace 2025-04-17
-
-# dev note: build trace 2025-04-22
-
-# dev note: build trace 2025-04-25
-
-# dev note: build trace 2025-04-29
-
-# dev note: build trace 2025-05-01
-
-# dev note: build trace 2025-05-02
-
-# dev note: build trace 2025-05-13
-
-# dev note: build trace 2025-05-15
-
-# dev note: build trace 2025-05-16
-
-# dev note: build trace 2025-05-27
-
-# dev note: build trace 2025-05-30
-
-# dev note: build trace 2025-06-05
-
-# dev note: build trace 2025-06-06
-
-# dev note: build trace 2025-06-10
-
-# dev note: build trace 2025-06-12
-
-# dev note: build trace 2025-06-13
-
-# dev note: build trace 2025-06-17
-
-# dev note: build trace 2025-06-19
-
-# dev note: build trace 2025-06-20
-
-# dev note: build trace 2025-06-24
-
-# dev note: build trace 2025-06-26
-
-# dev note: build trace 2025-07-01
-
-# dev note: build trace 2025-07-08
-
-# dev note: build trace 2025-07-11
-
-# dev note: build trace 2025-07-15
-
-# dev note: build trace 2025-07-17
-
-# dev note: build trace 2025-07-18
-
-# dev note: build trace 2025-07-24
-
-# dev note: build trace 2025-07-31
-
-# dev note: build trace 2025-08-01
-
-# dev note: build trace 2025-08-05
-
-# dev note: build trace 2025-08-07
-
-# dev note: build trace 2025-08-12
-
-# dev note: build trace 2025-08-14
-
-# dev note: build trace 2025-08-21
-
-# dev note: build trace 2025-08-22
-
-# dev note: build trace 2025-08-26
-
-# dev note: build trace 2025-08-28
-
-# dev note: build trace 2025-09-02
-
-# dev note: build trace 2025-09-04
-
-# dev note: build trace 2025-09-09
-
-# dev note: build trace 2025-09-12
-
-# dev note: build trace 2025-09-18
-
-# dev note: build trace 2025-09-19
-
-# dev note: build trace 2025-09-26
-
-# dev note: build trace 2025-09-30
-
-# dev note: build trace 2025-10-02
-
-# dev note: build trace 2025-10-07
-
-# dev note: build trace 2025-10-09
-
-# dev note: build trace 2025-10-10
+    return f"HIGH {check} risk — model may be memorising sensitive training data."
