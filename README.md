@@ -16,6 +16,18 @@
 
 ---
 
+## 💡 Abstract (Executive Summary)
+
+> **The Problem**: When Machine Learning models are trained on private data (like medical records, financial transactions, or customer emails), they can accidentally **memorize** that sensitive information. Attackers can then extract private data or determine if a specific person's record was in the training set.
+> 
+> **The Solution**: `privacylens` is an open-source privacy auditing toolkit. In **3 lines of code**, it runs **5 automated security checks** against any ML model (scikit-learn, PyTorch, XGBoost, HuggingFace) to detect data leakage risks before deployment.
+> 
+> **Why it matters**:
+> - 🧑‍💻 **For Developers**: Catch privacy bugs automatically in CI/CD pipelines before pushing models to production.
+> - 🏢 **For Enterprises**: Generate standalone interactive HTML compliance reports for GDPR and HIPAA audits.
+
+---
+
 ## 🎯 What is privacylens?
 
 Most ML engineers don't know if their model is **leaking private training data**. `privacylens` audits it across 5 core privacy vulnerability vectors.
