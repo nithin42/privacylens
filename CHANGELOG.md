@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] — 2026-08-05
+
+### Added
+- **Azure Machine Learning Pipeline Integration**: Added `AzureMLAuditStep` (`src/privacylens/integrations/azureml.py`) to execute automated 5-point privacy audit gates inside Azure ML Pipeline runs
+- **Azure OpenAI Service Auditor**: Added `AzureOpenAIAuditor` (`src/privacylens/integrations/azureml.py`) to evaluate fine-tuned Azure OpenAI deployments (`gpt-4`, `gpt-35-turbo`) for prompt injection PII memorization
+- **Optional Dependency Extra**: Added `pip install "privacyaudit[azure]"`
+- **Test Suite**: Added `test_azureml_integration.py` unit test suite
+
 ## [1.0.1] — 2026-07-31
 
 ### Added
