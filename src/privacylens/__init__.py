@@ -9,12 +9,13 @@ Supports 5-Point Privacy Audit:
 5. Empirical Differential Privacy Epsilon (ε) Estimator (Jagielski et al., 2020)
 
 Framework Adapters: scikit-learn, PyTorch, XGBoost, HuggingFace Transformers
+Azure Integrations: Azure ML Pipeline Step, Azure OpenAI Deployment Auditor
 Interactive HTML Compliance Reports & CLI + Python API
 """
 
 from __future__ import annotations
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 __author__ = "Nithin"
 __email__ = "kumbam.nithingoud@gmail.com"
 __license__ = "MIT"
@@ -31,6 +32,7 @@ from privacylens.attacks.attribute import AttributeInferenceAuditor
 from privacylens.attacks.inversion import ModelInversionAuditor
 from privacylens.attacks.membership import MembershipInferenceAuditor
 from privacylens.auditor import AuditReport, audit
+from privacylens.integrations.azureml import AzureMLAuditStep, AzureOpenAIAuditor
 from privacylens.leakage.dp import DPEpsilonAuditor
 from privacylens.leakage.pii import PIILeakageAuditor
 from privacylens.report.html import generate_html_report
@@ -43,6 +45,8 @@ __all__ = [
     "ModelInversionAuditor",
     "AttributeInferenceAuditor",
     "DPEpsilonAuditor",
+    "AzureMLAuditStep",
+    "AzureOpenAIAuditor",
     "BaseModelAdapter",
     "SklearnAdapter",
     "PyTorchAdapter",
