@@ -132,6 +132,31 @@ report.to_html("compliance_report.html")
 print(report.to_dict())
 ```
 
+## ☁️ Azure MLOps & Azure OpenAI Integration
+
+`privacylens` provides first-class, plug-and-play components for Microsoft Azure MLOps and Responsible AI governance:
+
+### Enforce Privacy Gate in Azure ML Pipeline
+```python
+from privacylens.integrations import AzureMLAuditStep
+
+# Executes inside Azure ML Pipeline run, uploads report artifact, and logs workspace metrics
+azure_step = AzureMLAuditStep(workspace_name="enterprise-azureml-ws")
+report = azure_step.run_pipeline_audit(model, X_train, y_train, X_test, y_test)
+```
+
+### Audit Azure OpenAI Fine-Tuned Model Deployment
+```python
+from privacylens.integrations import AzureOpenAIAuditor
+
+# Audits fine-tuned Azure OpenAI endpoints (GPT-4 / GPT-3.5) for PII memorization
+aoai_auditor = AzureOpenAIAuditor(
+    endpoint="https://my-aoai.openai.azure.com/",
+    deployment_name="gpt-4"
+)
+leakage_score, details = aoai_auditor.audit_deployment(prompts)
+```
+
 ---
 
 ## 🖥️ CLI Usage
@@ -165,6 +190,8 @@ privacylens/
 │   │   ├── pytorch_adapter.py
 │   │   ├── xgboost_adapter.py
 │   │   └── hf_adapter.py   # HuggingFace Transformers Adapter
+│   ├── integrations/
+│   │   └── azureml.py      # Azure ML Pipeline Step & Azure OpenAI Auditor
 │   ├── attacks/
 │   │   ├── membership.py   # MIA engine (Shokri et al.)
 │   │   ├── inversion.py    # Model Inversion Risk Auditor (Fredrikson et al.)
