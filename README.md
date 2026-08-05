@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)](https://github.com/nithin42/privacylens)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=1.0.1)](https://pypi.org/project/privacyaudit/)
+[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=1.1.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -74,6 +74,8 @@ Overall Risk: LOW
 - 🔄 **3. Model Inversion Risk Scorer** — Evaluate feature reconstructability risk from confidence probabilities (Fredrikson et al., 2015)
 - 🎯 **4. Attribute Inference Attack** — Measure sensitive secondary attribute predictability from confidence vectors (Yeom et al., 2018)
 - 🛡️ **5. Differential Privacy (ε) Estimator** — Estimate empirical privacy loss ($\epsilon$) under single-record modifications (Jagielski et al., 2020)
+- ⚡ **Azure Machine Learning Integration** — Plug-and-play step (`AzureMLAuditStep`) to enforce privacy audit gates inside Azure ML Pipelines
+- 🤖 **Azure OpenAI Service Auditor** — Evaluate fine-tuned Azure OpenAI deployments (`gpt-4`, `gpt-35-turbo`) for prompt injection PII leakage
 - 🌐 **Native Framework Adapters** — Out-of-the-box support for scikit-learn, PyTorch (`nn.Module`), XGBoost, and HuggingFace Transformers
 - 📄 **HTML Compliance Reports** — Export standalone, interactive HTML reports (`--report audit.html`) for security & GDPR/HIPAA compliance sharing
 - 🤖 **CLI + Python API** — Use in scripts or integrate into CI/CD pipelines (`privacylens audit`)
@@ -87,13 +89,16 @@ Overall Risk: LOW
 # Base install (scikit-learn models)
 pip install privacyaudit
 
+# With Azure Machine Learning & Azure OpenAI support
+pip install "privacyaudit[azure]"
+
 # With PyTorch support
 pip install "privacyaudit[torch]"
 
 # With XGBoost support
 pip install "privacyaudit[xgboost]"
 
-# Everything (PyTorch, XGBoost, Transformers)
+# Everything (Azure ML, PyTorch, XGBoost, Transformers)
 pip install "privacyaudit[all]"
 ```
 
