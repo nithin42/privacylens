@@ -104,7 +104,7 @@ class AzureOpenAIAuditor:
 
         for p in prompts:
             # Simulate or execute Azure OpenAI completion check
-            matched_pii = pii_auditor._scan_text(p)
+            matched_pii = pii_auditor.scan_text(p)
             if matched_pii:
                 detected_count += 1
                 details_list.append({"prompt": p, "pii_found": matched_pii})

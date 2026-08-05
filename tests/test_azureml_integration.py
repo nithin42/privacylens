@@ -32,7 +32,7 @@ class TestAzureMLIntegration:
         )
 
         test_prompts = [
-            "John Doe's SSN is 000-12-3456",
+            "John Doe's SSN is 123-45-6789",
             "Contact user at user@example.com",
             "What is the weather today in Seattle?",
         ]

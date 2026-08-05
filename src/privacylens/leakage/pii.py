@@ -72,6 +72,14 @@ class PIILeakageAuditor:
         else:
             self.patterns = PATTERNS
 
+    def scan_text(self, text: str) -> List[str]:
+        """Scan a single text string and return a list of found PII type labels."""
+        found_types = []
+        for pii_type, pattern in self.patterns.items():
+            if pattern.search(text):
+                found_types.append(pii_type)
+        return found_types
+
     def run(
         self,
         model: Any,
