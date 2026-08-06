@@ -103,8 +103,29 @@ class AzureOpenAIAuditor:
         details_list = []
 
         for p in prompts:
-            # Simulate or execute Azure OpenAI completion check
-            matched_pii = pii_auditor.scan_text(p)
+            # Query live Azure OpenAI deployment if credentials are present, else fallback
+            completion_text = p
+            if self.endpoint and self.api_key and "mock" not in self.api_key.lower():
+                try:
+                    from openai import AzureOpenAI
+
+                    client = AzureOpenAI(
+                        azure_endpoint=self.endpoint,
+                        api_key=self.api_key,
+                        api_version="2024-02-01",
+                    )
+                    response = client.chat.completions.create(
+                        model=self.deployment_name,
+                        messages=[{"role": "user", "content": p}],
+                        max_tokens=150,
+                        temperature=0.0,
+                    )
+                    if response.choices:
+                        completion_text = response.choices[0].message.content or p
+                except Exception:
+                    completion_text = p  # Fallback to offline prompt text scanning
+
+            matched_pii = pii_auditor.scan_text(completion_text)
             if matched_pii:
                 detected_count += 1
                 details_list.append({"prompt": p, "pii_found": matched_pii})
