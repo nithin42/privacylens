@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="logo.png" width="180" alt="privacylens logo"/>
+
 # 🔍 privacylens
 
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
