@@ -5,12 +5,16 @@
 **Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
 
 [![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)](https://github.com/nithin42/privacylens)
 [![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=1.1.0)](https://pypi.org/project/privacyaudit/)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
 [![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+<br/>
+
+> 📦 **PyPI Installation Note**: The PyPI package for `privacylens` is published as **`privacyaudit`**.  
+> Install via pip: `pip install privacyaudit` (or `pip install "privacyaudit[azure]"`).
 
 <br/>
 
