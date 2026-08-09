@@ -87,52 +87,81 @@ Overall Risk: LOW
 
 ---
 
-## 📦 Installation
+## ⚙️ Step-by-Step Installation Guide
+
+Follow these steps to install `privacylens` (`privacyaudit`) for your environment:
+
+### Step 1: Create & Activate Virtual Environment (Recommended)
 
 ```bash
-# Base install (scikit-learn models)
+# macOS / Linux
+python3 -m venv venv
+source venv/bin/activate
+
+# Windows PowerShell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+### Step 2: Install Package from PyPI
+
+Choose the installation option tailored to your ML framework:
+
+```bash
+# 🟢 Option A: Core Installation (scikit-learn models)
 pip install privacyaudit
 
-# With Azure Machine Learning & Azure OpenAI support
+# 🟦 Option B: With Azure ML & Azure OpenAI Support
 pip install "privacyaudit[azure]"
 
-# With PyTorch support
+# 🔴 Option C: With PyTorch Deep Learning Support
 pip install "privacyaudit[torch]"
 
-# With XGBoost support
+# ⚡ Option D: With XGBoost Gradient Boosting Support
 pip install "privacyaudit[xgboost]"
 
-# Everything (Azure ML, PyTorch, XGBoost, Transformers)
+# 🌟 Option E: Full Enterprise Suite (Azure ML, PyTorch, XGBoost, Transformers)
 pip install "privacyaudit[all]"
 ```
 
-> **Note**: The PyPI package is `privacyaudit`. Import in Python as `from privacylens import audit`.
+> **Note**: The PyPI package name is `privacyaudit`. Import in Python as `from privacylens import audit`.
 
 ---
 
-## 🚀 Quick Start
+### Step 3: Verify Installation
+
+Confirm your installation is working:
+
+```bash
+# Verify CLI command
+privacylens --help
+
+# Verify Python import
+python -c "import privacylens; print(privacylens.__version__)"
+# Output: 1.1.0
+```
+
+---
+
+## 🚀 Quick Start: Run Your First Audit in 3 Lines
 
 ```python
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
 from privacylens import audit
 
-# Train a model
+# 1. Train model
 X, y = make_classification(n_samples=1000, n_features=20, random_state=42)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+model = RandomForestClassifier(n_estimators=100).fit(X[:700], y[:700])
 
-model = RandomForestClassifier(n_estimators=100)
-model.fit(X_train, y_train)
+# 2. Audit model across all 5 privacy vulnerability vectors
+report = audit(model, X[:700], y[:700], X[700:], y[700:])
 
-# Audit it for all 5 privacy vulnerabilities
-report = audit(model, X_train, y_train, X_test, y_test)
+# 3. Display Rich summary table & export HTML compliance report
 report.summary()
-
-# Export interactive HTML audit report
 report.to_html("compliance_report.html")
 
-# Get audit results as dict (for JSON logging or API responses)
+# Optional: Get audit results as dict for JSON logging / API responses
 print(report.to_dict())
 ```
 
