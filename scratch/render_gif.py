@@ -1,11 +1,11 @@
 """
-Script to programmatically generate an ultra-crisp Catppuccin-themed terminal demo GIF for privacylens.
+Script to generate a real-world enterprise CLI terminal GIF for privacylens.
+Simulates a real developer auditing a credit risk model file (credit_risk_model.pkl).
 """
 
 from PIL import Image, ImageDraw, ImageFont
-import re
 
-def text_to_gif(output_gif_path="demo.gif"):
+def render_realworld_gif(output_gif_path="demo.gif"):
     # Dark theme colors (Catppuccin Mocha)
     BG_COLOR = (30, 30, 46)        # #1E1E2E
     HEADER_BG = (24, 24, 37)       # #181825
@@ -16,8 +16,8 @@ def text_to_gif(output_gif_path="demo.gif"):
     RED = (243, 139, 168)          # #F38BA8
     MUTED = (108, 112, 134)        # #6C7086
 
-    WIDTH = 900
-    HEIGHT = 520
+    WIDTH = 920
+    HEIGHT = 540
     FONT_SIZE = 14
 
     try:
@@ -27,14 +27,13 @@ def text_to_gif(output_gif_path="demo.gif"):
         font = ImageFont.load_default()
         font_bold = font
 
-    # Terminal lines to animate
+    # Real-world CLI terminal script
     lines_script = [
-        ("> python examples/benchmark_demo.py", CYAN, True),
+        ("> privacylens audit credit_risk_model.pkl train_data.csv test_data.csv --report compliance.html", CYAN, True),
         ("", TEXT_COLOR, False),
-        ("Starting privacylens Enterprise Privacy Audit Benchmark...", YELLOW, False),
-        ("", TEXT_COLOR, False),
-        ("Training RandomForestClassifier candidate model...", MUTED, False),
-        ("Auditing model across all 5 privacy vulnerability checks...", MUTED, False),
+        ("Loading model: credit_risk_model.pkl (RandomForestClassifier)", YELLOW, False),
+        ("Loading datasets: train_data.csv (10,000 samples) | test_data.csv (3,000 samples)...", MUTED, False),
+        ("Auditing model across all 5 privacy vulnerability vectors...", MUTED, False),
         ("", TEXT_COLOR, False),
         ("            privacylens 5-Point Privacy Audit Report            ", CYAN, True),
         ("+----------------------------------------------------------------+", MUTED, False),
@@ -51,12 +50,12 @@ def text_to_gif(output_gif_path="demo.gif"):
         ("| Differential Privacy (Epsilon)     |    1.000     |    HIGH    |", RED, True),
         ("+----------------------------------------------------------------+", MUTED, False),
         ("+------------------------------- Audit Summary -------------------------------+", MUTED, False),
-        ("| Model: RandomForestClassifier                                               |", TEXT_COLOR, False),
-        ("| Overall Risk: HIGH                                                          |", RED, True),
+        ("| Model: credit_risk_model.pkl (RandomForestClassifier)                        |", TEXT_COLOR, False),
+        ("| Overall Risk: HIGH RISK — Model memorisation detected                       |", RED, True),
         ("+-----------------------------------------------------------------------------+", MUTED, False),
         ("", TEXT_COLOR, False),
-        ("Interactive Compliance Report exported to: privacy_audit_benchmark.html", GREEN, True),
-        ("Benchmark complete! privacylens is Production Ready.", GREEN, True)
+        ("Interactive Compliance Report exported to: compliance.html", GREEN, True),
+        ("Audit complete: 3 critical privacy vulnerabilities flagged.", RED, True)
     ]
 
     frames = []
@@ -72,8 +71,8 @@ def text_to_gif(output_gif_path="demo.gif"):
         draw.ellipse([35, 12, 47, 24], fill=(255, 189, 46))  # Yellow dot
         draw.ellipse([55, 12, 67, 24], fill=(39, 201, 63))   # Green dot
 
-        # Draw Title
-        draw.text((WIDTH // 2 - 70, 10), "privacylens — bash", font=font, fill=MUTED)
+        # Draw Window Title
+        draw.text((WIDTH // 2 - 100, 10), "zsh — privacylens audit (production)", font=font, fill=MUTED)
 
         # Draw terminal lines
         y = 50
@@ -95,10 +94,10 @@ def text_to_gif(output_gif_path="demo.gif"):
         output_gif_path,
         save_all=True,
         append_images=frames[1:],
-        duration=250,
+        duration=220,
         loop=0
     )
-    print(f"GIF successfully generated: {output_gif_path}")
+    print(f"Real-world GIF successfully generated: {output_gif_path}")
 
 if __name__ == "__main__":
-    text_to_gif()
+    render_realworld_gif()
