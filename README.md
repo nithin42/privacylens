@@ -1,20 +1,27 @@
-<div align="center">
-
-# 🔍 privacylens
-
-**Audit any ML model for privacy vulnerabilities — in 3 lines of code.**
-
-[![CI](https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nithin42/privacylens/actions/workflows/ci.yml)
-[![PyPI version](https://badge.fury.io/py/privacyaudit.svg?v=1.1.0)](https://pypi.org/project/privacyaudit/)
-[![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)](https://pypi.org/project/privacyaudit/)
-[![Discussions](https://img.shields.io/github/discussions/nithin42/privacylens)](https://github.com/nithin42/privacylens/discussions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
-<br/>
+<table>
+  <tr>
+    <td width="160" align="center" valign="middle">
+      <img src="logo.png" width="140" alt="privacylens 3D logo"/>
+    </td>
+    <td valign="middle">
+      <h1>🔍 privacylens</h1>
+      <p><b>Audit any ML model for privacy vulnerabilities — in 3 lines of code.</b></p>
+      <p>
+        <a href="https://github.com/nithin42/privacylens/actions/workflows/ci.yml"><img src="https://github.com/nithin42/privacylens/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"/></a>
+        <a href="https://pypi.org/project/privacyaudit/"><img src="https://badge.fury.io/py/privacyaudit.svg?v=1.1.0" alt="PyPI version"/></a>
+        <a href="https://pypi.org/project/privacyaudit/"><img src="https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue" alt="Python"/></a>
+        <a href="https://github.com/nithin42/privacylens/discussions"><img src="https://img.shields.io/github/discussions/nithin42/privacylens" alt="Discussions"/></a>
+        <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"/></a>
+        <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+      </p>
+    </td>
+  </tr>
+</table>
 
 > 📦 **PyPI Installation Note**: The PyPI package for `privacylens` is published as **`privacyaudit`**.  
 > Install via pip: `pip install privacyaudit` (or `pip install "privacyaudit[azure]"`).
+
+<div align="center">
 
 <br/>
 
