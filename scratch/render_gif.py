@@ -1,11 +1,13 @@
 """
-Script to generate a real-world enterprise CLI terminal GIF for privacylens.
-Simulates a real developer auditing a credit risk model file (credit_risk_model.pkl).
+Script to render an animated terminal GIF for privacylens showing the complete end-to-end workflow:
+1. Installation: pip install privacyaudit
+2. Execution: privacylens audit credit_risk_model.pkl train_data.csv test_data.csv --report compliance.html
+3. Audit output table & compliance report generation.
 """
 
 from PIL import Image, ImageDraw, ImageFont
 
-def render_realworld_gif(output_gif_path="demo.gif"):
+def render_installation_audit_gif(output_gif_path="demo.gif"):
     # Dark theme colors (Catppuccin Mocha)
     BG_COLOR = (30, 30, 46)        # #1E1E2E
     HEADER_BG = (24, 24, 37)       # #181825
@@ -16,8 +18,8 @@ def render_realworld_gif(output_gif_path="demo.gif"):
     RED = (243, 139, 168)          # #F38BA8
     MUTED = (108, 112, 134)        # #6C7086
 
-    WIDTH = 920
-    HEIGHT = 540
+    WIDTH = 940
+    HEIGHT = 580
     FONT_SIZE = 14
 
     try:
@@ -27,11 +29,14 @@ def render_realworld_gif(output_gif_path="demo.gif"):
         font = ImageFont.load_default()
         font_bold = font
 
-    # Real-world CLI terminal script
+    # Full End-to-End Installation + Audit script
     lines_script = [
-        ("> privacylens audit credit_risk_model.pkl train_data.csv test_data.csv --report compliance.html", CYAN, True),
+        ("> pip install privacyaudit", CYAN, True),
+        ("Downloading privacyaudit-1.1.0-py3-none-any.whl (48 kB)", MUTED, False),
+        ("Successfully installed privacyaudit-1.1.0 rich-13.7.0 scikit-learn-1.4.0", GREEN, False),
         ("", TEXT_COLOR, False),
-        ("Loading model: credit_risk_model.pkl (RandomForestClassifier)", YELLOW, False),
+        ("> privacylens audit credit_risk_model.pkl train_data.csv test_data.csv --report compliance.html", CYAN, True),
+        ("Loading model: credit_risk_model.pkl (RandomForestClassifier)...", YELLOW, False),
         ("Loading datasets: train_data.csv (10,000 samples) | test_data.csv (3,000 samples)...", MUTED, False),
         ("Auditing model across all 5 privacy vulnerability vectors...", MUTED, False),
         ("", TEXT_COLOR, False),
@@ -72,7 +77,7 @@ def render_realworld_gif(output_gif_path="demo.gif"):
         draw.ellipse([55, 12, 67, 24], fill=(39, 201, 63))   # Green dot
 
         # Draw Window Title
-        draw.text((WIDTH // 2 - 100, 10), "zsh — privacylens audit (production)", font=font, fill=MUTED)
+        draw.text((WIDTH // 2 - 120, 10), "zsh — pip install & privacylens audit", font=font, fill=MUTED)
 
         # Draw terminal lines
         y = 50
@@ -86,7 +91,7 @@ def render_realworld_gif(output_gif_path="demo.gif"):
 
     # Add hold frames at the end
     last_frame = frames[-1]
-    for _ in range(15):
+    for _ in range(18):
         frames.append(last_frame)
 
     # Save animated GIF
@@ -97,7 +102,7 @@ def render_realworld_gif(output_gif_path="demo.gif"):
         duration=220,
         loop=0
     )
-    print(f"Real-world GIF successfully generated: {output_gif_path}")
+    print(f"Installation + Audit GIF successfully generated: {output_gif_path}")
 
 if __name__ == "__main__":
-    render_realworld_gif()
+    render_installation_audit_gif()
