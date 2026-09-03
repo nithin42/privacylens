@@ -28,13 +28,18 @@ def cli() -> None:
               help="Export HTML audit report to target file path (e.g. audit.html).")
 @click.option("--no-mia", is_flag=True, default=False,
               help="Skip Membership Inference Attack check.")
-def audit(model_path: str, train_data: str, test_data: str, output: str, report: Optional[str], no_mia: bool) -> None:
+@click.option("--trust", is_flag=True, default=False,
+              help="Acknowledge the risk of loading arbitrary pickle files.")
+def audit(model_path: str, train_data: str, test_data: str, output: str, report: Optional[str], no_mia: bool, trust: bool) -> None:
     """
     Audit a trained model for privacy vulnerabilities.
 
     MODEL_PATH: Path to saved model file (.pkl or .joblib).
     TRAIN_DATA: Path to training dataset CSV used to train the model.
     TEST_DATA:  Path to held-out test dataset CSV (not seen during training).
+
+    Security Consideration:
+    Only load models from trusted sources. Loading a malicious model can execute arbitrary code.
 
     Example:
 
@@ -47,6 +52,15 @@ def audit(model_path: str, train_data: str, test_data: str, output: str, report:
     from privacylens.auditor import audit as run_audit
 
     console = Console()
+
+    if not trust:
+        console.print(
+            "[yellow]⚠️  WARNING: Loading model from pickle file. "
+            "Only load models from trusted sources — pickle deserialization "
+            "can execute arbitrary code.[/yellow]"
+        )
+        if not click.confirm("Do you want to proceed and load this model?"):
+            sys.exit(1)
 
     try:
         model = joblib.load(model_path)
