@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":automergeMinor",
+    "schedule:weekends"
+  ],
+  "labels": ["dependencies"],
+  "pip_requirements": {
+    "fileMatch": ["requirements.*\\.txt$"]
+  },
+  "pip-compile": {
+    "fileMatch": ["requirements.*\\.in$"]
+  },
+  "github-actions": {
+    "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
+    "pinDigests": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["pip_requirements", "pep621"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  }
+}
