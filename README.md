@@ -199,18 +199,20 @@ leakage_score, details = aoai_auditor.audit_deployment(prompts)
 ## 🖥️ CLI Usage
 
 ```bash
-# Audit a saved model file
-privacylens audit model.pkl train.csv test.csv
+# Audit a saved model file (pass --trust for trusted local models)
+privacylens audit model.pkl train.csv test.csv --trust
 
 # Export interactive HTML report
-privacylens audit model.pkl train.csv test.csv --report compliance.html
+privacylens audit model.pkl train.csv test.csv --report compliance.html --trust
 
 # Output JSON for CI/CD integration
-privacylens audit model.pkl train.csv test.csv --output json
+privacylens audit model.pkl train.csv test.csv --output json --trust
 
 # Skip MIA check in fast pipelines
-privacylens audit model.pkl train.csv test.csv --no-mia
+privacylens audit model.pkl train.csv test.csv --no-mia --trust
 ```
+
+> 🔒 **Security Notice**: Deserializing model files (`.pkl`, `.joblib`) can execute arbitrary code. Only audit models from verified, trusted pipelines, or specify `--trust` to explicitly confirm intent.
 
 ---
 
