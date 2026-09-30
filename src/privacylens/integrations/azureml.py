@@ -8,12 +8,15 @@ Provides native integration components for Azure MLOps pipelines:
 
 from __future__ import annotations
 
+import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
 from privacylens.auditor import AuditReport, audit
+
+logger = logging.getLogger(__name__)
 
 
 class AzureMLAuditStep:
@@ -61,8 +64,8 @@ class AzureMLAuditStep:
                 run.log("inversion_score", report.inversion_score)
                 run.log("attribute_score", report.attribute_score)
                 run.log("dp_score", report.dp_score)
-        except Exception:
-            pass  # Fallback for local testing outside Azure ML cloud context
+        except Exception as e:
+            logger.warning(f"Azure ML Run context not available: {e}")  # Fallback for local testing outside Azure ML cloud context
 
         return report
 
@@ -122,7 +125,8 @@ class AzureOpenAIAuditor:
                     )
                     if response.choices:
                         completion_text = response.choices[0].message.content or p
-                except Exception:
+                except Exception as e:
+                    logger.warning(f"Azure OpenAI API call failed, falling back to offline scanning: {e}")
                     completion_text = p  # Fallback to offline prompt text scanning
 
             matched_pii = pii_auditor.scan_text(completion_text)
