@@ -72,3 +72,11 @@ target-version = ["py39"]
 [tool.flake8]
 max-line-length = 100
 extend-ignore = ["E203", "W503", "E501"]
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+]
